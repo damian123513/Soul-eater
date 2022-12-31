@@ -1,0 +1,123 @@
+local function fireProximityPrompt(prompt)
+	if prompt:FindFirstChild("ProximityPrompt") then
+		prompt:Fire()
+	end
+end
+
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+
+local Window = Rayfield:CreateWindow({
+	Name = "Soul Eater",
+	LoadingTitle = "Loading",
+	LoadingSubtitle = "by Sirius",
+	ConfigurationSaving = {
+		Enabled = true,
+		FolderName = MoneyFolder, -- Create a custom folder for your hub/game
+		FileName = "Money Farm Soul eater"
+	},
+        Discord = {
+        	Enabled = false,
+        	Invite = "sirius", -- The Discord invite code, do not include discord.gg/
+        	RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+        },
+	KeySystem = false, -- Set this to true to use our key system
+	KeySettings = {
+		Title = "Sirius Hub",
+		Subtitle = "Key System",
+		Note = "Join the discord (discord.gg/sirius)",
+		FileName = "SiriusKey",
+		SaveKey = true,
+		GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+		Key = "Hello"
+	}
+})
+
+local Tab = Window:CreateTab("Autofarms", 4483362458) -- Title, Image
+
+local Toggle = Tab:CreateToggle({
+	Name = "Money Farm + CD",
+	CurrentValue = false,
+	Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+        getgenv().Automoney = Value
+    local counter = 0
+	local CD = 50 -- Cooldown The game its weird but you can only do 3 times before waiting like 30 secs then redoing so yeah
+    while Automoney do
+			local radiantNpc = game:GetService("Workspace").radiantNpcs.heroDelivery
+			local character = game.Players.LocalPlayer.Character
+			character:MoveTo(radiantNpc.HumanoidRootPart.Position)
+			wait(0.10)
+
+            for i, v in pairs(game:GetService("Workspace"):GetDescendants()) do
+                if v:IsA("Part") or v:IsA("MeshPart") then
+                    if game:GetService("Players").LocalPlayer:DistanceFromCharacter(v.Position) <= 1 then
+                        if v:FindFirstChild("ProximityPrompt") then
+                            fireproximityprompt(v.ProximityPrompt)
+                        end
+                    end
+                end
+     end
+            
+			wait(0.5)
+			local args = {
+				[1] = "heroDelivery",
+				[2] = {
+					[1] = radiantNpc
+				}
+			}
+			game:GetService("ReplicatedStorage").remotes.remoteEvent:FireServer(unpack(args))
+			wait(0.10)
+			local deliveryDestinationModel = nil
+			for _, model in pairs(game:GetService("Workspace").miscObjects.heroDelivery:GetChildren()) do
+				if model.Name == "heroDelivery" and model.inUse.Value == true then
+					deliveryDestinationModel = model
+					break
+				end
+			end
+			local deliveryDestination = nil
+			if deliveryDestinationModel then
+				deliveryDestination = deliveryDestinationModel:FindFirstChild("officerCindy")
+			end
+			if deliveryDestination and deliveryDestination.HumanoidRootPart then
+				wait(0.5)
+				character:MoveTo(deliveryDestination.HumanoidRootPart.Position)
+			end
+			wait(0.10)
+			local args = {
+				[1] = "openDialogue",
+				[2] = {
+					[1] = deliveryDestination
+				}
+			}
+			game:GetService("ReplicatedStorage").remotes.remoteEvent:FireServer(unpack(args))
+			wait(0.5)
+			game:GetService("ReplicatedStorage").remotes.remoteEvent:FireServer(unpack(args))
+			wait(0.5)
+			local args = {
+				[1] = "heroDeliveryTurnIn",
+				[2] = {
+					[1] = deliveryDestination
+				}
+			}
+			game:GetService("ReplicatedStorage").remotes.remoteEvent:FireServer(unpack(args))
+			local args = {
+				[1] = "heroDeliveryTurnIn",
+				[2] = {
+					[1] = deliveryDestination
+				}
+			}
+			game:GetService("ReplicatedStorage").remotes.remoteEvent:FireServer(unpack(args))
+
+      counter = counter + 1
+      if counter == 7 then
+		local args = {
+			[1] = "exitQuestClient"
+		}
+		
+		game:GetService("ReplicatedStorage").remotes.remoteEvent:FireServer(unpack(args))		
+        wait(CD)
+        counter = 0
+      end
+		end
+	end,
+})
